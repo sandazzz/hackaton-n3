@@ -21,3 +21,5 @@ build/
 
 # Nodemon specific
 nodemon-debug.log
+
+pnpm-lock.yaml

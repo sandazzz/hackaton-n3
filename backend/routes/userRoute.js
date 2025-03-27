@@ -1,4 +1,5 @@
 import { User } from "../models/user.js";
+import { authenticateToken } from "../middlewares/auth.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -88,6 +89,37 @@ export default function userRoute(app) {
     } catch (err) {
       console.error("Erreur lors de la connexion de l'utilisateur :", err);
       res.status(500).json({ message: "Erreur interne du serveur" });
+    }
+  });
+
+  app.get("/user/profile", authenticateToken, async (req, res) => {
+    try {
+      const user = await User.findById(req.user.id).select("-password");
+
+      if (!user) {
+        return res.status(404).json({ message: "Utilisateur non trouvé." });
+      }
+
+      res.status(200).json({ user });
+    } catch (err) {
+      console.error("Erreur lors de la récupération du profil :", err);
+      res.status(500).json({ message: "Erreur interne du serveur." });
+    }
+  });
+
+  app.put("/user/profile", authenticateToken, async (req, res) => {
+    try {
+      const { firstname, lastname, email, phone_number } = req.body;
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user.id,
+        { firstname, lastname, email, phone_number },
+        { new: true }
+      ).select("-password");
+
+      res.status(200).json({ user: updatedUser });
+    } catch (err) {
+      console.error("Erreur MAJ profil :", err);
+      res.status(500).json({ message: "Erreur interne du serveur." });
     }
   });
 }

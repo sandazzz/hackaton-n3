@@ -26,6 +26,8 @@ const showSignUpModal = ref(false);
       >
         Inscription
       </button>
+
+      <RouterLink to="/Profile" class="text-white">Profile</RouterLink>
     </nav>
   </header>
 
