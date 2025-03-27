@@ -7,7 +7,19 @@ import { Type } from './models/type.js';
 import { Lab_Type } from './models/lab_type.js';
 import Announce from './models/announce.js';
 
+import cookieParser from "cookie-parser";
+import cors from 'cors'
+
+
 const app = express();
+app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 const PORT = 3000;
 
 mongoose.connect('mongodb://localhost:27017/hackathon?retryWrites=true&w=majority')
@@ -31,7 +43,8 @@ const labo = new Lab({
   owner: user._id,
   description: 'Labo de meth',
   price: 50,
-  location: "1 rue de la Grande Cour, 666, Darkweb",
+  region: "Nouvelle Aquitaine, France",
+  adress: "1 rue de la Grande Cour, 666, Darkweb",
   mobile: true
 })
 
@@ -54,8 +67,6 @@ const annonounce = new Announce({
   labo: labo._id
 })
 await annonounce.save()
-
-
 
 // Route GET /
 app.get('/', (req, res) => {

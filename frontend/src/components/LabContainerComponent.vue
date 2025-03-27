@@ -1,8 +1,24 @@
 <script setup>
+import { onMounted, ref } from 'vue';
 import CardComponent from './CardComponent.vue';
 
 const props = defineProps({
     type: String
+})
+
+const user = ref(null)
+
+onMounted(async () => {
+    try {
+        const res = await fetch('http://localhost:3000/announces', {
+            credentials: 'include',
+        })
+        if (!res.ok) throw new Error('Erreur de récupération du profil')
+        user.value = await res.json()
+        console.log(user.value)
+    } catch (err) {
+        console.error('Erreur chargement profil :', err)
+    }
 })
 
 </script>
@@ -14,13 +30,7 @@ const props = defineProps({
             <p class="ml-2 bg-emerald-700 px-2 text-center rounded-full">{{props.type}}</p>
         </div>
         <div class="flex mt-3 space-x-8">
-            <CardComponent/>
-            <CardComponent/>
-            <CardComponent/>
-            <CardComponent/>
-            <CardComponent/>
-            <CardComponent/>
-            <CardComponent/>
+            <CardComponent region="Nouvelle Aquitaine France" owner="Jean" price="50"/>
         </div>
     </div>
 </template>
