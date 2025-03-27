@@ -6,7 +6,7 @@ const LabSchema = new mongoose.Schema({
     price: {type: Number, required: true},
     location: {type: String, required: true },
     mobile: {type: Boolean, required:true},
-    type: {type: mongoose.Schema.Types.ObjectId, ref: 'Lab_Type', required: true}
+    type: {type: mongoose.Schema.Types.ObjectId, ref: 'Lab_Type'}
     },{
         timestamps: true 
     });
