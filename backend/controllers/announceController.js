@@ -1,6 +1,6 @@
 import Announce from "../models/announce.js";
 
-export default async function getAll(req, res) {
+export default async function getAllAnnounces(req, res) {
     try {
         const announces = await Announce.find();
         res.setHeader("Cache-Control", "no-cache")

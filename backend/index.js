@@ -1,6 +1,5 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import getAll from './controllers/announceController.js';
 import { User } from './models/user.js';
 import { Lab } from './models/lab.js';
 import { Type } from './models/type.js';
@@ -9,6 +8,8 @@ import Announce from './models/announce.js';
 
 import cookieParser from "cookie-parser";
 import cors from 'cors'
+import getAllAnnounces from './controllers/announceController.js';
+import getOneLab from './controllers/labControllers.js';
 
 
 const app = express();
@@ -26,47 +27,49 @@ mongoose.connect('mongodb://localhost:27017/hackathon?retryWrites=true&w=majorit
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-const user = new User({
-  firstname: 'John',
-  lastname: 'Doe',
-  phone_number: '01 23 45 67 89',
-  email: 'john.doe@notascam.fr',
-  password: 'password'
-})
-await user.save()
+// const user = new User({
+//   firstname: 'John',
+//   lastname: 'Doe',
+//   phone_number: '01 23 45 67 89',
+//   email: 'john.doe@notascam.fr',
+//   password: 'password'
+// })
 
-const type = new Type({
-  name: 'Meth'
-})
 
-const labo = new Lab({
-  owner: user._id,
-  description: 'Labo de meth',
-  price: 50,
-  region: "Nouvelle Aquitaine, France",
-  adress: "1 rue de la Grande Cour, 666, Darkweb",
-  mobile: true
-})
+// const type = new Type({
+//   name: 'Meth'
+// })
 
-const type_labo = new Lab_Type({
-  labo: labo._id,
-  type: type._id
-})
-await type_labo.save()
+// const labo = new Lab({
+//   owner: user._id,
+//   description: 'Labo de meth',
+//   price: 50,
+//   location: "1 rue de la Grande Cour, 666, Darkweb",
+//   mobile: true
+// })
 
-type.labo = type_labo._id
-await type.save()
+// const type_labo = new Lab_Type({
+//   labo: labo._id,
+//   type: type._id
+// })
+// await type_labo.save()
 
-labo.type = type_labo._id
-await labo.save()
+// type.labo = type_labo._id
+// await type.save()
 
-const annonounce = new Announce({
-  title: 'Annonce test',
-  description: 'Annonce pour un labo de meth tout équipé',
-  publisher: user._id,
-  labo: labo._id
-})
-await annonounce.save()
+// labo.type = type_labo._id
+// await labo.save()
+
+// user.labo = labo._id
+// await user.save()
+
+// const annonounce = new Announce({
+//   title: 'Annonce test',
+//   description: 'Annonce pour un labo de meth tout équipé',
+//   publisher: user._id,
+//   labo: labo._id
+// })
+// await annonounce.save()
 
 // Route GET /
 app.get('/', (req, res) => {
@@ -74,7 +77,11 @@ app.get('/', (req, res) => {
 });
 
 app.get("/announces", (req, res) => {
-  getAll(req, res)
+  getAllAnnounces(req, res)
+})
+
+app.get("/labos/:id", (req, res) => {
+  getOneLab(req, res)
 })
 
 // Démarrer le serveur
