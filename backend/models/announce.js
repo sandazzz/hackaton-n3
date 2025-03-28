@@ -5,6 +5,7 @@ const AnnounceSchema = new mongoose.Schema({
   description: {type: String, required: true},
   publisher: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, 
   labo: {type: mongoose.Schema.Types.ObjectId, ref: 'Lab', required: true},
+  type: {type: String, required: true},
   reservation: {type: mongoose.Schema.Types.ObjectId, ref: 'Announce_Reservation'}
 },{
     timestamps: true 

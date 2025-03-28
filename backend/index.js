@@ -8,8 +8,9 @@ import Announce from './models/announce.js';
 
 import cookieParser from "cookie-parser";
 import cors from 'cors'
-import getAllAnnounces from './controllers/announceController.js';
+import getAllAnnounces, { getAnnouncesByTypes } from './controllers/announceController.js';
 import getOneLab from './controllers/labControllers.js';
+import getAllTypes from './controllers/typeController.js';
 
 
 const app = express();
@@ -35,12 +36,23 @@ mongoose.connect('mongodb://localhost:27017/hackathon?retryWrites=true&w=majorit
 //   password: 'password'
 // })
 
-
 // const type = new Type({
 //   name: 'Meth'
 // })
+// await type.save()
+// const type2 = new Type({
+//   name: 'LSD'
+// })
+// await type2.save()
 
 // const labo = new Lab({
+//   owner: user._id,
+//   description: 'Labo de meth',
+//   price: 50,
+//   location: "1 rue de la Grande Cour, 666, Darkweb",
+//   mobile: true
+// })
+// const labo2 = new Lab({
 //   owner: user._id,
 //   description: 'Labo de meth',
 //   price: 50,
@@ -53,12 +65,16 @@ mongoose.connect('mongodb://localhost:27017/hackathon?retryWrites=true&w=majorit
 //   type: type._id
 // })
 // await type_labo.save()
-
-// type.labo = type_labo._id
-// await type.save()
+// const type_labo2 = new Lab_Type({
+//   labo: labo2._id,
+//   type: type2._id
+// })
+// await type_labo2.save()
 
 // labo.type = type_labo._id
 // await labo.save()
+// labo2.type = type_labo2._id
+// await labo2.save()
 
 // user.labo = labo._id
 // await user.save()
@@ -67,18 +83,29 @@ mongoose.connect('mongodb://localhost:27017/hackathon?retryWrites=true&w=majorit
 //   title: 'Annonce test',
 //   description: 'Annonce pour un labo de meth tout équipé',
 //   publisher: user._id,
-//   labo: labo._id
+//   labo: labo._id,
+//   type: type.name
 // })
 // await annonounce.save()
+// const annonounce2 = new Announce({
+//   title: 'Annonce test',
+//   description: 'Annonce pour un labo de meth tout équipé',
+//   publisher: user._id,
+//   labo: labo2._id,
+//   type: type2.name
+// })
+// await annonounce2.save()
 
 // Route GET /
 app.get('/', (req, res) => {
   res.send('Hello');
 });
 
-app.get("/announces", (req, res) => {
-  getAllAnnounces(req, res)
-})
+app.get("/announces", (req, res) => {getAllAnnounces(req, res)})
+app.get("/announces/:type", (req, res) => {getAnnouncesByTypes(req,res)})
+
+app.get("/types", (req, res) => {getAllTypes(req, res)})
+app.get("/types/:type", (req, res) => {getOneTypes(req, res)})
 
 app.get("/labos/:id", (req, res) => {
   getOneLab(req, res)

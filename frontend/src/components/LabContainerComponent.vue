@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import CardComponent from './CardComponent.vue';
-import { Lab } from '../../../backend/models/lab';
 
 const props = defineProps({
     type: String
@@ -12,19 +11,19 @@ const lab = ref([])
 
 onMounted(async () => {
     try {
-        const res = await fetch('http://localhost:3000/announces', {
+        const res = await fetch('http://localhost:3000/announces/'+props.type, {
             credentials: 'include',
         })
         if (!res.ok) throw new Error('Erreur de récupération de l\'annonce')
         announce.value = await res.json()
 
-        const fetchLab = await fetch('http://localhost:3000/labos/'+announce.value[0].labo, {
-            credentials: 'include'
-        }) // A changer !!!
-        if (!fetchLab.ok) throw new Error('Erreur de récupération de laboratoires')
-        lab.value = await fetchLab.json()
+        for (let i=0; i<announce.value.length; i++){
+            const fetchLab = await fetch('http://localhost:3000/labos/'+announce.value[i].labo, {credentials: 'include'})
+            if (!fetchLab.ok) throw new Error('Erreur de récupération de laboratoires')
+            lab.value = await fetchLab.json()
+            announce.value[i].price = lab.value.price 
+        }
 
-        announce.value[0].price = lab.value.price //CECI EST UN TEST, MERCI DE NE PAS PANIQUER
     } catch (err) {
         console.error('Erreur chargement profil :', err)
     }
