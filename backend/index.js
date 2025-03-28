@@ -114,6 +114,7 @@ app.get("/labos/:id", (req, res) => {
   getOneLab(req, res)
 })
 
+userRoute(app)
 // Démarrer le serveur
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur http://localhost:${PORT}`);

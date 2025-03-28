@@ -21,7 +21,6 @@ onMounted(async () => {
 
 <template>
     <main class="min-h-screen max-h-full bg-black">
-        <nav class="w-full h-24 bg-slate-700"></nav>
         <LabContainerComponent 
             v-for="(item, index) in types" 
             :key="index"
