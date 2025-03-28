@@ -12,7 +12,10 @@ import getAllAnnounces, { getAnnouncesByTypes } from './controllers/announceCont
 import getOneLab from './controllers/labControllers.js';
 import getAllTypes from './controllers/typeController.js';
 
+import userRoute from "./routes/userRoute.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
