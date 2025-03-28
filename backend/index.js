@@ -1,18 +1,22 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import { User } from './models/user.js';
-import { Lab } from './models/lab.js';
-import { Type } from './models/type.js';
-import { Lab_Type } from './models/lab_type.js';
-import Announce from './models/announce.js';
+import express from "express";
+import mongoose from "mongoose";
+import { User } from "./models/user.js";
+import { Lab } from "./models/lab.js";
+import { Type } from "./models/type.js";
+import { Lab_Type } from "./models/lab_type.js";
+import Announce from "./models/announce.js";
 
 import cookieParser from "cookie-parser";
-import cors from 'cors'
-import getAllAnnounces, { getAnnouncesByTypes } from './controllers/announceController.js';
-import getOneLab from './controllers/labControllers.js';
-import getAllTypes from './controllers/typeController.js';
+import cors from "cors";
+import getAllAnnounces, {
+  getAnnouncesByTypes,
+} from "./controllers/announceController.js";
+import getOneLab from "./controllers/labControllers.js";
+import getAllTypes from "./controllers/typeController.js";
 
 import userRoute from "./routes/userRoute.js";
+import labRoutes from "./routes/labRoute.js";
+
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -27,9 +31,10 @@ app.use(
 );
 const PORT = 3000;
 
-mongoose.connect('mongodb://localhost:27017/hackathon?retryWrites=true&w=majority')
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+mongoose
+  .connect("mongodb://localhost:27017/hackathon?retryWrites=true&w=majority")
+  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .catch(() => console.log("Connexion à MongoDB échouée !"));
 
 // const user = new User({
 //   firstname: 'John',
@@ -100,21 +105,31 @@ mongoose.connect('mongodb://localhost:27017/hackathon?retryWrites=true&w=majorit
 // await annonounce2.save()
 
 // Route GET /
-app.get('/', (req, res) => {
-  res.send('Hello');
+app.get("/", (req, res) => {
+  res.send("Hello");
 });
 
-app.get("/announces", (req, res) => {getAllAnnounces(req, res)})
-app.get("/announces/:type", (req, res) => {getAnnouncesByTypes(req,res)})
+app.get("/announces", (req, res) => {
+  getAllAnnounces(req, res);
+});
+app.get("/announces/:type", (req, res) => {
+  getAnnouncesByTypes(req, res);
+});
 
-app.get("/types", (req, res) => {getAllTypes(req, res)})
-app.get("/types/:type", (req, res) => {getOneTypes(req, res)})
+app.get("/types", (req, res) => {
+  getAllTypes(req, res);
+});
+app.get("/types/:type", (req, res) => {
+  getOneTypes(req, res);
+});
 
 app.get("/labos/:id", (req, res) => {
-  getOneLab(req, res)
-})
+  getOneLab(req, res);
+});
 
-userRoute(app)
+userRoute(app);
+labRoutes(app);
+
 // Démarrer le serveur
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur http://localhost:${PORT}`);

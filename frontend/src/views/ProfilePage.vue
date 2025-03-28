@@ -1,14 +1,20 @@
 <script setup>
 import { reactive, ref, onMounted } from "vue";
-import { RouterLink } from "vue-router";
-import logo from "../assets/logo.svg";
+import ProfileSidebarNavigation from "../componants/ProfileSidebarNavigation.vue";
 import ProfileEditModal from "../componants/ProfileEditModal.vue";
+import ProfileInfosSection from "../componants/ProfileInfosSection.vue";
 
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const goToCreateLab = () => {
+  router.push("createLab");
+};
+
+const currentSection = ref("profile");
 const showModal = ref(false);
-
-function handleUpdated(newData) {
-  Object.assign(user, newData);
-}
+const isLoaded = ref(false);
 
 const user = reactive({
   nom: "",
@@ -16,8 +22,7 @@ const user = reactive({
   email: "",
   tel: "",
 });
-
-const isLoaded = ref(false);
+const userLabs = ref([]);
 
 onMounted(async () => {
   try {
@@ -29,16 +34,24 @@ onMounted(async () => {
 
     const data = await res.json();
 
+    console.log(data);
+
     user.nom = data.user.firstname ?? "";
     user.prenom = data.user.lastname ?? "";
     user.email = data.user.email ?? "";
     user.tel = data.user.phone_number ?? "";
+
+    userLabs.value = data.user.labo ?? [];
 
     isLoaded.value = true;
   } catch (err) {
     console.error("Erreur chargement profil :", err);
   }
 });
+
+function handleUpdated(newData) {
+  Object.assign(user, newData);
+}
 </script>
 
 <template>
@@ -46,98 +59,101 @@ onMounted(async () => {
     class="absolute inset-0 flex min-h-screen bg-gradient-to-r from-black via-emerald-900 to-black text-white"
   >
     <!-- Sidebar -->
-    <nav
-      class="w-1/3 p-8 space-y-6 border-r border-yellow-500 bg-black bg-opacity-40 backdrop-blur-sm"
-    >
-      <img :src="logo" alt="Logo" class="w-16 mx-auto mb-6" />
-      <h2 class="text-2xl font-semibold mb-6 text-center">Ton Profil</h2>
-      <ul class="space-y-4 text-lg list-disc list-inside">
-        <li>
-          <RouterLink
-            class="underline decoration-yellow-500 hover:text-yellow-400"
-          >
-            Informations Personnelles
-          </RouterLink>
-        </li>
-        <li>
-          <RouterLink
-            to="/locations"
-            class="underline decoration-yellow-500 hover:text-yellow-400"
-          >
-            Historique de locations
-          </RouterLink>
-        </li>
-        <li>
-          <RouterLink
-            to="/new"
-            class="underline decoration-yellow-500 hover:text-yellow-400"
-          >
-            Mettre en location
-          </RouterLink>
-        </li>
-        <li>
-          <RouterLink
-            to="/annonces"
-            class="underline decoration-yellow-500 hover:text-yellow-400"
-          >
-            Vos annonces
-          </RouterLink>
-        </li>
-        <li>
-          <RouterLink
-            to="/labs"
-            class="underline decoration-yellow-500 hover:text-yellow-400"
-          >
-            Vos laboratoires
-          </RouterLink>
-        </li>
-      </ul>
-    </nav>
+    <ProfileSidebarNavigation
+      :currentSection="currentSection"
+      @update:currentSection="(val) => (currentSection = val)"
+    />
 
     <!-- Fiche utilisateur -->
+
     <section class="w-2/3 p-12 flex flex-col justify-center items-center">
-      <div
-        v-if="isLoaded"
-        class="bg-black bg-opacity-80 text-white rounded-2xl shadow-[0_0_25px_#00FFAE] p-10 w-full max-w-md border border-gray-700 space-y-6"
-      >
-        <div>
-          <h3 class="text-lg font-semibold">Nom</h3>
-          <p class="italic text-yellow-400">{{ user.nom }}</p>
-          <hr class="border-yellow-500 my-2" />
-        </div>
-        <div>
-          <h3 class="text-lg font-semibold">Prénom</h3>
-          <p class="italic text-yellow-400">{{ user.prenom }}</p>
-          <hr class="border-yellow-500 my-2" />
-        </div>
-        <div>
-          <h3 class="text-lg font-semibold">Email</h3>
-          <p class="italic text-yellow-400">{{ user.email }}</p>
-          <hr class="border-yellow-500 my-2" />
-        </div>
-        <div>
-          <h3 class="text-lg font-semibold">Téléphone</h3>
-          <p class="italic text-yellow-400">{{ user.tel }}</p>
-          <hr class="border-yellow-500 my-2" />
-        </div>
-
-        <button
-          @click="showModal = true"
-          class="bg-white text-black font-semibold rounded px-6 py-2 hover:bg-yellow-400 transition duration-300 mx-auto mt-4"
-        >
-          Modifier
-        </button>
-
-        <ProfileEditModal
-          :show="showModal"
-          :userData="user"
-          @close="showModal = false"
-          @updated="handleUpdated"
-        />
+      <div v-if="!isLoaded" class="text-white text-center">
+        <p>Chargement du profil...</p>
       </div>
 
-      <div v-else class="text-white text-center">
-        <p>Chargement du profil...</p>
+      <div v-else class="w-full justify-center flex">
+        <!-- Section infos personnelles -->
+        <ProfileInfosSection
+          v-if="currentSection === 'profile'"
+          :user="user"
+          :showModal="showModal"
+          @update:showModal="(val) => (showModal = val)"
+          @updated="handleUpdated"
+        />
+
+        <!-- Historique des locations -->
+        <div
+          v-else-if="currentSection === 'history'"
+          class="text-white text-center"
+        >
+          <h3 class="text-xl font-semibold mb-4">Historique de locations</h3>
+          <p>À implémenter...</p>
+        </div>
+
+        <!-- Annonces -->
+        <div
+          v-else-if="currentSection === 'annonces'"
+          class="text-white text-center"
+        >
+          <h3 class="text-xl font-semibold mb-4">Vos annonces</h3>
+          <p>À implémenter...</p>
+        </div>
+
+        <!-- Laboratoires -->
+        <div v-else-if="currentSection === 'labs'" class="text-white w-full">
+          <!-- Header Section -->
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-semibold tracking-tight">
+              Vos laboratoires
+            </h3>
+            <button
+              @click="goToCreateLab"
+              class="bg-gradient-to-br from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-black font-semibold py-2 px-5 rounded-2xl shadow-md hover:shadow-lg transition"
+            >
+              + Nouveau labo
+            </button>
+          </div>
+
+          <!-- Liste des labs -->
+          <div
+            v-if="userLabs.length > 0"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            <div
+              v-for="lab in userLabs"
+              :key="lab._id"
+              class="bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 p-5 rounded-2xl shadow-xl hover:shadow-emerald-500/30 transition duration-200"
+            >
+              <h4 class="text-xl font-semibold text-yellow-400 mb-3">
+                {{ lab.description }}
+              </h4>
+
+              <ul class="space-y-1 text-sm text-zinc-300">
+                <li>
+                  <span class="font-semibold text-white">📍 Localisation:</span>
+                  {{ lab.location }}
+                </li>
+                <li>
+                  <span class="font-semibold text-white">💰 Prix:</span>
+                  {{ lab.price }} €
+                </li>
+                <li>
+                  <span class="font-semibold text-white">🔧 Mobile:</span>
+                  {{ lab.mobile ? "Oui" : "Non" }}
+                </li>
+                <li v-if="lab.type?.name">
+                  <span class="font-semibold text-white">🧪 Type:</span>
+                  {{ lab.type.name }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Aucun labo -->
+          <div v-else class="text-center text-zinc-400 mt-12">
+            <p>Vous n'avez encore créé aucun laboratoire.</p>
+          </div>
+        </div>
       </div>
     </section>
   </div>
